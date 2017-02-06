@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_honortest" default="compile.module.honortest">
+  <dirname property="module.honortest.basedir" file="${ant.file.module_honortest}"/>
+  
+  <property name="module.jdk.home.honortest" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.honortest" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.honortest" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.honortest" value="-encoding GBK -source 1.7 ${compiler.args}"/>
+  
+  <property name="honortest.output.dir" value="${module.honortest.basedir}/out/production/HonorTest"/>
+  <property name="honortest.testoutput.dir" value="${module.honortest.basedir}/out/test/HonorTest"/>
+  
+  <path id="honortest.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="honortest.module.production.classpath">
+    <path refid="${module.jdk.classpath.honortest}"/>
+  </path>
+  
+  <path id="honortest.runtime.production.module.classpath">
+    <pathelement location="${honortest.output.dir}"/>
+  </path>
+  
+  <path id="honortest.module.classpath">
+    <path refid="${module.jdk.classpath.honortest}"/>
+    <pathelement location="${honortest.output.dir}"/>
+  </path>
+  
+  <path id="honortest.runtime.module.classpath">
+    <pathelement location="${honortest.testoutput.dir}"/>
+    <pathelement location="${honortest.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.honortest">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.honortest">
+    <patternset refid="excluded.from.module.honortest"/>
+  </patternset>
+  
+  <path id="honortest.module.sourcepath">
+    <dirset dir="${module.honortest.basedir}">
+      <include name="src"/>
+      <include name="gen"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.honortest" depends="compile.module.honortest.production,compile.module.honortest.tests" description="Compile module HonorTest"/>
+  
+  <target name="compile.module.honortest.production" depends="register.custom.compilers" description="Compile module HonorTest; production classes">
+    <mkdir dir="${honortest.output.dir}"/>
+    <javac2 destdir="${honortest.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.honortest}/javac">
+      <compilerarg line="${compiler.args.honortest}"/>
+      <bootclasspath refid="honortest.module.bootclasspath"/>
+      <classpath refid="honortest.module.production.classpath"/>
+      <src refid="honortest.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.honortest"/>
+    </javac2>
+    
+    <copy todir="${honortest.output.dir}">
+      <fileset dir="${module.honortest.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.honortest.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.honortest.tests" depends="register.custom.compilers,compile.module.honortest.production" description="compile module HonorTest; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.honortest" description="cleanup module">
+    <delete dir="${honortest.output.dir}"/>
+    <delete dir="${honortest.testoutput.dir}"/>
+  </target>
+</project>
